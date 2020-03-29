@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 
 const { program } = require('commander');
+const path = require('path');
+const fs = require('fs');
 const chalk = require('chalk');
+const { pipeline } = require('stream');
 
-const { cipher, decipher } = require('./cipher.js');
-const { checkOpts, parseAction, parseNumber } = require('./utils.js')
+const { encoding } = require('./config.js');
+const { checkOpts, parseAction, parseNumber } = require('./utils.js');
+const { createTransformStream } = require('./transformStream.js');
 
 program
   .version('0.1.0')
@@ -18,6 +22,28 @@ program.parse(process.argv);
 process.on('exit', (code) => console.log(chalk.blue('Process exit with code', code)));
 
 checkOpts(program.opts());
-// if (program.test) {
-//   console.log(cipher(program.opts().test))
-// }
+
+process.stdin.setEncoding(encoding);
+
+const { shift, action, input, output } = program.opts();
+
+const inputFile = input && path.resolve(__dirname, input);
+const outputFile = output && path.resolve(__dirname, output);
+
+const readStream = inputFile ? fs.createReadStream(inputFile, { encoding: encoding }) : process.stdin;
+const writeStream = outputFile ? fs.createWriteStream(outputFile, encoding) : process.stdout;
+
+const transformStream = createTransformStream(action, shift);
+
+pipeline(
+  readStream,
+  transformStream,
+  writeStream,
+  (err) => {
+    if (err) {
+      console.log(chalk.red('Something went wrong', err))
+    } else {
+      console.log(chalk.green('Finished'))
+    }
+  }
+);
