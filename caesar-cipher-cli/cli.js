@@ -6,9 +6,9 @@ const fs = require('fs');
 const chalk = require('chalk');
 const { pipeline } = require('stream');
 
-const { encoding } = require('./config.js');
-const { checkOpts, parseAction, parseNumber } = require('./utils.js');
-const { createTransformStream } = require('./transformStream.js');
+const { encoding } = require('./src/config.js');
+const { checkOpts, parseAction, parseNumber } = require('./src/utils.js');
+const { createTransformStream } = require('./src/transformStream.js');
 
 program
   .version('0.1.0')

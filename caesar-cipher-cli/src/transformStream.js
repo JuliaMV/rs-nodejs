@@ -1,5 +1,5 @@
 const { Transform } = require('stream');
-const { cipher, decipher } = require('./cipher');
+const { cipher, decipher } = require('./cipher.js');
 
 function converter(str, action, shift) {
   if (action === "encode") {

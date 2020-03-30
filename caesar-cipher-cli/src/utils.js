@@ -43,7 +43,7 @@ function checkOpts(opt) {
 
 
 function checkFileAccess(str, method) {
-  const file =  path.resolve(__dirname, str);
+  const file =  path.resolve(__dirname.split(path.sep).slice(0, -1).join(path.sep), str);
 
   fs.accessSync(file, fs.constants.F_OK);
 
