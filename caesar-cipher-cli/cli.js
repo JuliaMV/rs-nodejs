@@ -21,7 +21,12 @@ program.parse(process.argv);
 
 process.on('exit', (code) => console.log(chalk.blue('Process exit with code', code)));
 
-checkOpts(program.opts());
+try {
+  checkOpts(program.opts());
+} catch (err) {
+  console.error(chalk.red(err));
+  process.exit(9);
+}
 
 process.stdin.setEncoding(encoding);
 
@@ -31,7 +36,7 @@ const inputFile = input && path.resolve(__dirname, input);
 const outputFile = output && path.resolve(__dirname, output);
 
 const readStream = inputFile ? fs.createReadStream(inputFile, { encoding: encoding }) : process.stdin;
-const writeStream = outputFile ? fs.createWriteStream(outputFile, encoding) : process.stdout;
+const writeStream = outputFile ? fs.createWriteStream(outputFile,{ encoding, flags: 'a'}) : process.stdout;
 
 const transformStream = createTransformStream(action, shift);
 
