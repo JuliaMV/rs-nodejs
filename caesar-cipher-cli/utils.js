@@ -1,4 +1,5 @@
-const chalk = require('chalk');
+const path = require('path');
+const fs = require('fs');
 const { allowedActions } = require('./config.js');
 
 function parseAction(str) {
@@ -10,33 +11,50 @@ function parseNumber(numb) {
 }
 
 function checkOpts(opt) {
-  let { shift, action } = opt;
+  let { shift, action, input, output } = opt;
   if (!shift) {
-    console.error(chalk.red('Shift is required'));
-    process.exit(9);
+    throw new Error('Shift is required');
   }
 
   if (shift < 0) {
-    console.error(chalk.red('Shift must be more than 0'));
-    process.exit(9)
+    throw new Error('Shift must greater than 0');
   }
 
   if (!Number.isInteger(shift)) {
-    console.error(chalk.red('Shift must be integer value'));
-    process.exit(9)
+    throw new Error('Shift must be integer');
   }
 
   if (!action) {
-    console.error(chalk.red('Action is required'));
-    process.exit(9);
+    throw new Error('Action is required');
   }
 
   if (!allowedActions.includes(action)) {
-    console.error(chalk.red(`Action shuld be "encode" or "decode", but passed "${action}"`));
-    process.exit(9);
+    throw new Error(`Action shuld be "encode" or "decode", but passed "${action}"`);
+  }
+
+  if (input) {
+    checkFileAccess(input, 'read');
+  }
+
+  if (output) {
+    checkFileAccess(output, 'write');
   }
 };
 
+
+function checkFileAccess(str, method) {
+  const file =  path.resolve(__dirname, str);
+
+  fs.accessSync(file, fs.constants.F_OK);
+
+  if (method === 'read') {
+    fs.accessSync(file, fs.constants.R_OK);
+  }
+
+  if (method === 'write') {
+    fs.accessSync(file, fs.constants.W_OK);
+  }
+}
 
 module.exports = {
   checkOpts,
