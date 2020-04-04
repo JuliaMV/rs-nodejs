@@ -1,3 +1,4 @@
+/* eslint-disable */
 const path = require('path');
 const fs = require('fs');
 const { allowedActions } = require('./config.js');
@@ -11,7 +12,7 @@ function parseNumber(numb) {
 }
 
 function checkOpts(opt) {
-  let { shift, action, input, output } = opt;
+  const { shift, action, input, output } = opt;
   if (!shift) {
     throw new Error('Shift is required');
   }
@@ -29,7 +30,9 @@ function checkOpts(opt) {
   }
 
   if (!allowedActions.includes(action)) {
-    throw new Error(`Action shuld be "encode" or "decode", but passed "${action}"`);
+    throw new Error(
+      `Action shuld be "encode" or "decode", but passed "${action}"`
+    );
   }
 
   if (input) {
@@ -39,11 +42,16 @@ function checkOpts(opt) {
   if (output) {
     checkFileAccess(output, 'write');
   }
-};
-
+}
 
 function checkFileAccess(str, method) {
-  const file =  path.resolve(__dirname.split(path.sep).slice(0, -1).join(path.sep), str);
+  const file = path.resolve(
+    __dirname
+      .split(path.sep)
+      .slice(0, -1)
+      .join(path.sep),
+    str
+  );
 
   fs.accessSync(file, fs.constants.F_OK);
 
@@ -59,5 +67,5 @@ function checkFileAccess(str, method) {
 module.exports = {
   checkOpts,
   parseAction,
-  parseNumber,
+  parseNumber
 };

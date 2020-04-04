@@ -1,5 +1,4 @@
-#!/usr/bin/env node
-
+/* eslint-disable */
 const { program } = require('commander');
 const path = require('path');
 const fs = require('fs');
@@ -19,7 +18,9 @@ program
 
 program.parse(process.argv);
 
-process.on('exit', (code) => console.log(chalk.blue('Process exit with code', code)));
+process.on('exit', code =>
+  console.log(chalk.blue('Process exit with code', code))
+);
 
 try {
   checkOpts(program.opts());
@@ -35,20 +36,19 @@ const { shift, action, input, output } = program.opts();
 const inputFile = input && path.resolve(__dirname, input);
 const outputFile = output && path.resolve(__dirname, output);
 
-const readStream = inputFile ? fs.createReadStream(inputFile, { encoding: encoding }) : process.stdin;
-const writeStream = outputFile ? fs.createWriteStream(outputFile,{ encoding, flags: 'a'}) : process.stdout;
+const readStream = inputFile
+  ? fs.createReadStream(inputFile, { encoding })
+  : process.stdin;
+const writeStream = outputFile
+  ? fs.createWriteStream(outputFile, { encoding, flags: 'a' })
+  : process.stdout;
 
 const transformStream = createTransformStream(action, shift);
 
-pipeline(
-  readStream,
-  transformStream,
-  writeStream,
-  (err) => {
-    if (err) {
-      console.log(chalk.red('Something went wrong', err))
-    } else {
-      console.log(chalk.green('Finished'))
-    }
+pipeline(readStream, transformStream, writeStream, err => {
+  if (err) {
+    console.log(chalk.red('Something went wrong', err));
+  } else {
+    console.log(chalk.green('Finished'));
   }
-);
+});

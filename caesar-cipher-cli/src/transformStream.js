@@ -2,12 +2,12 @@ const { Transform } = require('stream');
 const { cipher, decipher } = require('./cipher.js');
 
 function converter(str, action, shift) {
-  if (action === "encode") {
+  if (action === 'encode') {
     return cipher(str, shift);
   }
-  
-  if (action === "decode") {
-    return decipher(str, shift)
+
+  if (action === 'decode') {
+    return decipher(str, shift);
   }
 }
 
@@ -19,10 +19,7 @@ function createTransformStream(action, shift) {
       const str = converter(data, action, shift);
       callback(null, str);
     }
-  })
-};
-
-
-
+  });
+}
 
 module.exports = { createTransformStream };

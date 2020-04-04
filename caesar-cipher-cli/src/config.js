@@ -3,5 +3,5 @@ const encoding = 'utf8';
 
 module.exports = {
   allowedActions,
-  encoding,
+  encoding
 };

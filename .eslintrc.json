@@ -26,6 +26,7 @@
             "templateStrings": true
         }
     },
+    "ignorePatterns": ["ceasar-cipher-cli"],
     "extends": [
         "eslint:recommended",
         "plugin:node/recommended",
