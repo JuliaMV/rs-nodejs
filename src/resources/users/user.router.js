@@ -9,9 +9,8 @@ router.route('/').get(async (req, res) => {
 
 router.route('/:id').get(async (req, res) => {
   const user = await usersService.getById(req.params.id);
-  console.log('user', user);
   if (user) {
-    res.status(200).json(user.map(User.toResponse));
+    res.status(200).json(User.toResponse(user));
   } else {
     res.status(404).json(`User with id ${req.params.id} not found`);
   }
@@ -24,12 +23,17 @@ router.route('/').post(async (req, res) => {
 
 router.route('/:id').put(async (req, res) => {
   const user = await usersService.update(req.params.id, req.body);
-  res.status(200).json(User.toResponse(user));
+  if (user) {
+    res.status(200).json(User.toResponse(user));
+  } else {
+    res.status(404).json(`User with id ${req.params.id} not found`);
+  }
 });
 
 router.route('/:id').delete(async (req, res) => {
   await usersService.remove(req.params.id);
-  res.status(200).json('The user has been deleted');
+  // delete tasks assigned for user
+  res.status(200).json(`User with id ${req.params.id} has been deleted`);
 });
 
 module.exports = router;

@@ -7,14 +7,8 @@ const getAll = async () => {
 };
 
 const getById = async id => {
-  // const user = users.find(item => item.id === id);
-  // console.log('getById', user);
-  // return user;
-  const user = users.filter(item => item.id === id);
-  if (user.length > 0) {
-    return user;
-  }
-  return [];
+  const user = users.find(item => item.id === id);
+  return user;
 };
 
 const create = async ({ name, login, password }) => {
