@@ -31,9 +31,13 @@ router.route('/:id').put(async (req, res) => {
 });
 
 router.route('/:id').delete(async (req, res) => {
-  await usersService.remove(req.params.id);
+  const user = await usersService.remove(req.params.id);
   // delete tasks assigned for user
-  res.status(200).json(`User with id ${req.params.id} has been deleted`);
+  if (user) {
+    res.status(200).json(`User with id ${req.params.id} has been deleted`);
+  } else {
+    res.status(404).json(`User with id ${req.params.id} not found`);
+  }
 });
 
 module.exports = router;

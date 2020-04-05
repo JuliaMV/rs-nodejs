@@ -32,7 +32,7 @@ const remove = async id => {
   if (user) {
     users = users.filter(item => item.id !== id);
   }
-  return null;
+  return user;
 };
 
 module.exports = { getAll, getById, create, update, remove };
