@@ -1,18 +1,11 @@
 const router = require('express').Router({ mergeParams: true });
 const Task = require('./task.model');
 const tasksService = require('./task.service');
-const boardsService = require('../boards/board.service');
 
 router.route('/').get(async (req, res) => {
   const { boardId } = req.params;
-
-  const board = await boardsService.getById(boardId);
-  if (board) {
-    const tasks = await tasksService.getAllByBoard(req.params.boardId);
-    res.status(200).json(tasks.map(Task.toResponse));
-  } else {
-    res.status(404).json(`Board with id ${req.params.id} not found`);
-  }
+  const tasks = await tasksService.getAllByBoard(boardId);
+  res.status(200).json(tasks.map(Task.toResponse));
 });
 
 router.route('/:id').get(async (req, res) => {
@@ -40,8 +33,12 @@ router.route('/:id').put(async (req, res) => {
 });
 
 router.route('/:id').delete(async (req, res) => {
-  await tasksService.remove(req.params.id);
-  res.status(200).json(`Task with id ${req.params.id} has been deleted`);
+  const task = await tasksService.remove(req.params.id);
+  if (task) {
+    res.status(204).json(`Task with id ${req.params.id} has been deleted`);
+  } else {
+    res.status(404).json(`Task with id ${req.params.id} not found`);
+  }
 });
 
 module.exports = router;

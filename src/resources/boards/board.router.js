@@ -33,7 +33,7 @@ router.route('/:id').put(async (req, res) => {
 router.route('/:id').delete(async (req, res) => {
   const board = await boardsService.remove(req.params.id);
   if (board) {
-    res.status(200).json(`Board with id ${req.params.id} has been deleted`);
+    res.status(204).json(`Board with id ${req.params.id} has been deleted`);
   } else {
     res.status(404).json(`Board with id ${req.params.id} not found`);
   }
