@@ -3,17 +3,23 @@ const swaggerUI = require('swagger-ui-express');
 const path = require('path');
 const YAML = require('yamljs');
 
-const { logParams, errorHandler, notFound } = require('./middlewares');
+const {
+  logParams,
+  errorHandler,
+  notFound,
+  logError
+} = require('./middlewares');
+const logger = require('./logger');
 const userRouter = require('./resources/users/user.router');
 const boardsRouter = require('./resources/boards/board.router');
 const tasksRouter = require('./resources/tasks/task.router');
 
 process.on('unhandledRejection', reason => {
-  console.error(`Unhandled rejection detected: ${reason.message}`);
+  logger.log('error', `Unhandled rejection detected: ${reason.message}`);
 });
 
 process.on('uncaughtException', error => {
-  console.error(`captured error: ${error.message}`);
+  logger.log('error', `Captured error: ${error.message}`);
   const exit = process.exit;
   exit(1);
 });
@@ -39,7 +45,7 @@ app.use('/users', userRouter);
 app.use('/boards', boardsRouter);
 boardsRouter.use('/:boardId/tasks', tasksRouter);
 app.use('*', notFound);
-
+app.use(logError);
 app.use(errorHandler);
 
 // For testing uncaughtException

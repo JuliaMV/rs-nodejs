@@ -1,21 +1,9 @@
-const { finished } = require('stream');
+const logger = require('../logger');
 
 const logParams = (req, res, next) => {
-  const { method, url, body, query } = req;
-  const start = Date.now();
-
-  // eslint-disable-next-line callback-return
+  const { url, body, query } = req;
+  logger.log({ level: 'info', message: JSON.stringify({ url, query, body }) });
   next();
-
-  finished(res, () => {
-    const ms = Date.now() - start;
-    const { statusCode } = res;
-    console.log(
-      `${method} ${url} ${JSON.stringify(query)} ${JSON.stringify(
-        body
-      )} ${statusCode} [${ms}ms]`
-    );
-  });
 };
 
 module.exports = logParams;
