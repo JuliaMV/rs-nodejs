@@ -1,3 +1,5 @@
+const createError = require('http-errors');
+
 const User = require('./user.model');
 
 let users = [];
@@ -8,6 +10,9 @@ const getAll = async () => {
 
 const getById = async id => {
   const user = users.find(item => item.id === id);
+  if (!user) {
+    throw new createError.NotFound(`User with id ${id} not found`);
+  }
   return user;
 };
 
@@ -18,20 +23,16 @@ const create = async ({ name, login, password }) => {
 };
 
 const update = async ({ id, name, login, password }) => {
-  const user = users.find(item => item.id === id);
-  if (user) {
-    if (name) user.name = name;
-    if (login) user.login = login;
-    if (password) user.password = password;
-  }
+  const user = await getById(id);
+  user.name = name;
+  user.login = login;
+  user.password = password;
   return user;
 };
 
 const remove = async id => {
-  const user = users.find(item => item.id === id);
-  if (user) {
-    users = users.filter(item => item.id !== id);
-  }
+  const user = await getById(id);
+  users = users.filter(item => item.id !== id);
   return user;
 };
 

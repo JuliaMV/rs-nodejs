@@ -1,4 +1,6 @@
 const { Router } = require('express');
+
+const { catchError } = require('../../middlewares');
 const User = require('./user.model');
 const usersService = require('./user.service');
 
@@ -9,11 +11,7 @@ const getAllUsers = async (req, res) => {
 
 const getUserById = async (req, res) => {
   const user = await usersService.getById(req.params.id);
-  if (user) {
-    res.status(200).json(User.toResponse(user));
-  } else {
-    res.status(404).json(`User with id ${req.params.id} not found`);
-  }
+  res.status(200).json(User.toResponse(user));
 };
 
 const createUser = async (req, res) => {
@@ -23,25 +21,17 @@ const createUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const user = await usersService.update(req.params.id, req.body);
-  if (user) {
-    res.status(200).json(User.toResponse(user));
-  } else {
-    res.status(404).json(`User with id ${req.params.id} not found`);
-  }
+  res.status(200).json(User.toResponse(user));
 };
 
 const deleteUser = async (req, res) => {
-  const user = await usersService.remove(req.params.id);
-  if (user) {
-    res.status(204).json(`User with id ${req.params.id} has been deleted`);
-  } else {
-    res.status(404).json(`User with id ${req.params.id} not found`);
-  }
+  await usersService.remove(req.params.id);
+  res.status(204).json(`User with id ${req.params.id} has been deleted`);
 };
 
 module.exports = Router()
-  .get('/', getAllUsers)
-  .get('/:id', getUserById)
-  .post('/', createUser)
-  .put('/:id', updateUser)
-  .delete('/:id', deleteUser);
+  .get('/', catchError(getAllUsers))
+  .get('/:id', catchError(getUserById))
+  .post('/', catchError(createUser))
+  .put('/:id', catchError(updateUser))
+  .delete('/:id', catchError(deleteUser));

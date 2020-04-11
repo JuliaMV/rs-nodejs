@@ -1,4 +1,6 @@
 const { Router } = require('express');
+
+const { catchError } = require('../../middlewares');
 const Board = require('./board.model');
 const boardsService = require('./board.service');
 
@@ -9,11 +11,7 @@ const getAllBoards = async (req, res) => {
 
 const getBoardById = async (req, res) => {
   const board = await boardsService.getById(req.params.id);
-  if (board) {
-    res.status(200).json(Board.toResponse(board));
-  } else {
-    res.status(404).json(`Board with id ${req.params.id} not found`);
-  }
+  res.status(200).json(Board.toResponse(board));
 };
 
 const createBoard = async (req, res) => {
@@ -23,25 +21,17 @@ const createBoard = async (req, res) => {
 
 const updateBoard = async (req, res) => {
   const board = await boardsService.update(req.params.id, req.body);
-  if (board) {
-    res.status(200).json(Board.toResponse(board));
-  } else {
-    res.status(404).json(`Board with id ${req.params.id} not found`);
-  }
+  res.status(200).json(Board.toResponse(board));
 };
 
 const deleteBoard = async (req, res) => {
-  const board = await boardsService.remove(req.params.id);
-  if (board) {
-    res.status(204).json(`Board with id ${req.params.id} has been deleted`);
-  } else {
-    res.status(404).json(`Board with id ${req.params.id} not found`);
-  }
+  await boardsService.remove(req.params.id);
+  res.status(204).send(`Board with id ${req.params.id} has been deleted`);
 };
 
 module.exports = Router()
-  .get('/', getAllBoards)
-  .get('/:id', getBoardById)
-  .post('/', createBoard)
-  .put('/:id', updateBoard)
-  .delete('/:id', deleteBoard);
+  .get('/', catchError(getAllBoards))
+  .get('/:id', catchError(getBoardById))
+  .post('/', catchError(createBoard))
+  .put('/:id', catchError(updateBoard))
+  .delete('/:id', catchError(deleteBoard));

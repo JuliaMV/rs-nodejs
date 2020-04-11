@@ -1,3 +1,5 @@
+const createError = require('http-errors');
+
 const Task = require('./task.model');
 
 let tasks = [];
@@ -8,6 +10,9 @@ const getAllByBoard = async boardId => {
 
 const getById = async id => {
   const task = tasks.find(item => item.id === id);
+  if (!task) {
+    throw new createError.NotFound(`Task with id ${id} not found`);
+  }
   return task;
 };
 
@@ -40,23 +45,19 @@ const update = async ({
   columnId,
   boardId
 }) => {
-  const task = tasks.find(item => item.id === id);
-  if (task) {
-    if (title) task.title = title;
-    if (order) task.columns = order;
-    if (description) task.description = description;
-    if (userId) task.userId = userId;
-    if (columnId) task.columnIds = columnId;
-    if (boardId) task.boardIds = boardId;
-  }
+  const task = await getById(id);
+  task.title = title;
+  task.columns = order;
+  task.description = description;
+  task.userId = userId;
+  task.columnIds = columnId;
+  task.boardIds = boardId;
   return task;
 };
 
 const remove = async id => {
-  const task = tasks.find(item => item.id === id);
-  if (task) {
-    tasks = tasks.filter(item => item.id !== id);
-  }
+  const task = await getById(id);
+  tasks = tasks.filter(item => item.id !== id);
   return task;
 };
 

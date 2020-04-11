@@ -1,4 +1,6 @@
 const { Router } = require('express');
+
+const { catchError } = require('../../middlewares');
 const Task = require('./task.model');
 const tasksService = require('./task.service');
 
@@ -10,11 +12,8 @@ const getAllTasks = async (req, res) => {
 
 const getTaskById = async (req, res) => {
   const task = await tasksService.getById(req.params.id);
-  if (task) {
-    res.status(200).json(Task.toResponse(task));
-  } else {
-    res.status(404).json(`Task with id ${req.params.id} not found`);
-  }
+
+  res.status(200).json(Task.toResponse(task));
 };
 
 const createTask = async (req, res) => {
@@ -25,25 +24,17 @@ const createTask = async (req, res) => {
 
 const updateTask = async (req, res) => {
   const task = await tasksService.update(req.params.id, req.body);
-  if (task) {
-    res.status(200).json(Task.toResponse(task));
-  } else {
-    res.status(404).json(`Task with id ${req.params.id} not found`);
-  }
+  res.status(200).json(Task.toResponse(task));
 };
 
 const deleteTask = async (req, res) => {
-  const task = await tasksService.remove(req.params.id);
-  if (task) {
-    res.status(204).json(`Task with id ${req.params.id} has been deleted`);
-  } else {
-    res.status(404).json(`Task with id ${req.params.id} not found`);
-  }
+  await tasksService.remove(req.params.id);
+  res.status(204).json(`Task with id ${req.params.id} has been deleted`);
 };
 
 module.exports = Router({ mergeParams: true })
-  .get('/', getAllTasks)
-  .get('/:id', getTaskById)
-  .post('/', createTask)
-  .put('/:id', updateTask)
-  .delete('/:id', deleteTask);
+  .get('/', catchError(getAllTasks))
+  .get('/:id', catchError(getTaskById))
+  .post('/', catchError(createTask))
+  .put('/:id', catchError(updateTask))
+  .delete('/:id', catchError(deleteTask));
