@@ -9,7 +9,6 @@ const errorHandler = (err, req, res, next) => {
         .status(INTERNAL_SERVER_ERROR)
         .send(getStatusText(INTERNAL_SERVER_ERROR));
     }
-    return next(err);
   }
   return next();
 };

@@ -9,20 +9,9 @@ const {
   notFound,
   logError
 } = require('./middlewares');
-const logger = require('./logger');
 const userRouter = require('./resources/users/user.router');
 const boardsRouter = require('./resources/boards/board.router');
 const tasksRouter = require('./resources/tasks/task.router');
-
-process.on('unhandledRejection', reason => {
-  logger.log('error', `Unhandled rejection detected: ${reason.message}`);
-});
-
-process.on('uncaughtException', error => {
-  logger.log('error', `Captured error: ${error.message}`);
-  const exit = process.exit;
-  exit(1);
-});
 
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
@@ -47,20 +36,5 @@ boardsRouter.use('/:boardId/tasks', tasksRouter);
 app.use('*', notFound);
 app.use(logError);
 app.use(errorHandler);
-
-// For testing uncaughtException
-
-// setTimeout(() => {
-//   throw new Error('Oops1!');
-// }, 1500);
-
-// For testing unhandledRejection
-
-// setTimeout(() => {
-//   Promise.reject(new Error('Oops2!'));
-// }, 1500);
-
-// new Promise(() => { throw new Error('Catch rejected'); });
-// throw new Error('Catch me!');
 
 module.exports = app;
