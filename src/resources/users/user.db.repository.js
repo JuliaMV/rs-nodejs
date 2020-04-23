@@ -1,4 +1,4 @@
-const { checkIsExist } = require('../../utils');
+const { checkIsExist, generateHash } = require('../../utils');
 
 const User = require('./user.model');
 
@@ -15,12 +15,18 @@ const getById = async id => {
 };
 
 const create = async ({ name, login, password }) => {
-  const q = User.create({ name, login, password });
+  const hashedPassword = await generateHash(password);
+  const q = User.create({ name, login, password: hashedPassword });
   return await q;
 };
 
 const update = async ({ id, name, login, password }) => {
-  const q = User.findByIdAndUpdate(id, { name, login, password });
+  const hashedPassword = await generateHash(password);
+  const q = User.findByIdAndUpdate(id, {
+    name,
+    login,
+    password: hashedPassword
+  });
   return await checkIsExistUser(q, id);
 };
 

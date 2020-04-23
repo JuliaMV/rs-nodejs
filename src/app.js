@@ -12,6 +12,7 @@ const {
 const userRouter = require('./resources/users/user.router');
 const boardsRouter = require('./resources/boards/board.router');
 const tasksRouter = require('./resources/tasks/task.router');
+const loginRouter = require('./resources/users/login.router');
 
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
@@ -30,6 +31,7 @@ app.use('/', (req, res, next) => {
   next();
 });
 
+app.use('/login', loginRouter);
 app.use('/users', userRouter);
 app.use('/boards', boardsRouter);
 boardsRouter.use('/:boardId/tasks', tasksRouter);

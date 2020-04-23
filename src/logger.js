@@ -8,9 +8,9 @@ const infoLog = path.join(__dirname, '../logs/info.log');
 const logger = createLogger({
   level: 'silly',
   transports: [
-    new transports.Console({
-      format: combine(format.colorize(), format.cli())
-    }),
+    // new transports.Console({
+    //   format: combine(format.colorize(), format.cli())
+    // }),
     new transports.File({
       filename: errorLog,
       level: 'error',
