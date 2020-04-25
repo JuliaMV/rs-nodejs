@@ -7,7 +7,8 @@ const {
   logParams,
   errorHandler,
   notFound,
-  logError
+  logError,
+  auth
 } = require('./middlewares');
 const userRouter = require('./resources/users/user.router');
 const boardsRouter = require('./resources/boards/board.router');
@@ -32,10 +33,10 @@ app.use('/', (req, res, next) => {
 });
 
 app.use('/login', loginRouter);
-app.use('/users', userRouter);
-app.use('/boards', boardsRouter);
-boardsRouter.use('/:boardId/tasks', tasksRouter);
-app.use('*', notFound);
+app.use('/users', auth, userRouter);
+app.use('/boards', auth, boardsRouter);
+boardsRouter.use('/:boardId/tasks', auth, tasksRouter);
+app.use('*', auth, notFound);
 app.use(logError);
 app.use(errorHandler);
 
