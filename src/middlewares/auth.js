@@ -1,34 +1,29 @@
 const jwt = require('jsonwebtoken');
+const createError = require('http-errors');
 const { JWT_SECRET_KEY } = require('../common/config');
+const User = require('../resources/users/user.model');
 
-const auth = (req, res, next) => {
-  // const token = req.header('Authorization').replace('Bearer ', '')
-  // const data = jwt.verify(token, JWT_SECRET_KEY)
-
-  //   try {
-  //       const user = await User.findOne({ _id: data._id, 'tokens.token': token })
-  //       if (!user) {
-  //           throw new Error()
-  //       }
-  //       req.user = user
-  //       req.token = token
-  //       next()
-  //   } catch (error) {
-  //       res.status(401).send({ error: 'Not authorized to access this resource' })
-  //   }
-
+const auth = async (req, res, next) => {
   try {
-    const token = req.headers.authorization.split(' ')[1];
-
-    if (!token) {
-      return res.status(401).json({ message: 'Not authorization' });
+    const authHeader = req.header('Authorization');
+    if (!authHeader) {
+      throw new createError.Unauthorized('Not authorized');
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET_KEY);
-    req.user = decoded;
+    const token = req.header('Authorization').split(' ')[1];
+    if (!token) {
+      throw new createError.Unauthorized('Not authorized');
+    }
+
+    const data = jwt.verify(token, JWT_SECRET_KEY);
+    const user = await User.findOne({ _id: data.userId, token });
+    if (!user) {
+      throw new createError.Unauthorized('Not authized');
+    }
+
     return next();
-  } catch (e) {
-    res.status(401).json({ message: 'Not authorization' });
+  } catch (err) {
+    return next(err);
   }
 };
 

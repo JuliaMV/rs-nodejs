@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const { PORT, MONGO_CONNECTION_STRING } = require('./common/config');
 const logger = require('./logger');
 const User = require('./resources/users/user.model');
-const { generateHash } = require('./utils');
 
 const exit = process.exit;
 
@@ -28,11 +27,9 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', async () => {
   console.log('We are connected to MongoDB');
   await db.dropDatabase();
-  const hashedPassword = await generateHash('admin');
   await User.create({
-    name: 'admin',
-    login: 'admin',
-    password: hashedPassword
+    password: 'admin',
+    login: 'admin'
   });
   app.listen(PORT, () =>
     console.log(`App is running on http://localhost:${PORT}`)

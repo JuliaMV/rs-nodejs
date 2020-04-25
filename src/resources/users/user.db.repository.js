@@ -15,8 +15,7 @@ const getById = async id => {
 };
 
 const create = async ({ name, login, password }) => {
-  const hashedPassword = await generateHash(password);
-  const q = User.create({ name, login, password: hashedPassword });
+  const q = User.create({ name, login, password });
   return await q;
 };
 
@@ -35,4 +34,9 @@ const remove = async id => {
   return await checkIsExistUser(q, id);
 };
 
-module.exports = { getAll, getById, create, update, remove };
+const findByLogin = async login => {
+  const user = await User.findOne({ login });
+  return user;
+};
+
+module.exports = { getAll, getById, create, update, remove, findByLogin };
